@@ -8,7 +8,7 @@ package PokerGame;
 import Log.Log;
 import PokerDeck.CardDeck;
 import PlayerInfo.AIPlayer;
-import PlayerInfo.TruePlayer;
+import PlayerInfo.GamePlayer;
 import UI.BlackJackUINew;
 import javax.mail.MessagingException;
 
@@ -21,27 +21,42 @@ public class BlackJackPlay {
     private int nRound;
     private BlackJackPlayRound blackJackPlayRound;
     static private CardDeck deck;
+    private final int nNumberOfPlayer;
+    private GamePlayer pCurrentPlayer;
+    private int nMoney;
 
-    TruePlayer pPlayer;
+    GamePlayer[] pPlayerArray;
     AIPlayer pAI;
 
     final BlackJackUINew UI;
 
-    public BlackJackPlay(BlackJackUINew ui) {
+    public BlackJackPlay(BlackJackUINew ui, int nPlayer) {
         if (deck == null) {
             deck = new CardDeck();
         }
         nRound = 0;
         int nStartMoney = 1000;
-        pPlayer = TruePlayer.GetPlayer();
+        nNumberOfPlayer = nPlayer;
+        pPlayerArray = new GamePlayer[nNumberOfPlayer];
+        if (nPlayer > 0) {
+            //should get info from server
+            for (int i = 0; i < nNumberOfPlayer; i++) {
+                pPlayerArray[i] = new GamePlayer(nStartMoney, "Player" + String.valueOf(i), 1, 1000, i);
+                pCurrentPlayer = pPlayerArray[0];
+            }
+        } else {
+            Log.getInstance().Log(2, "PlayerSetToZero");
+        }
+
         pAI = new AIPlayer(nStartMoney, true);
         UI = ui;
         UI.RefreshMoneyOfBothPlayer();
     }
 
     public void ResetHand() {
-        //Logic
-        pPlayer.ResetHand();
+        for (int i = 0; i < nNumberOfPlayer; i++) {
+            pPlayerArray[i].ResetHand();
+        }
         pAI.ResetHand();
     }
 
@@ -49,25 +64,22 @@ public class BlackJackPlay {
         PlayNewRound();
     }
 
-    public TruePlayer getPlayer() {
-        return pPlayer;
-    }
+    public boolean CheckPlayerLose(GamePlayer pPlayer) {
 
-    public AIPlayer getAI() {
-        return pAI;
-    }
-
-    public boolean GameEnd() {
-        //Logic
         if (pPlayer.getBalance() < 50) {
             Log.getInstance().Log(1, "A.I Wins in " + nRound + "Round!");
             return true;
-        } else if (pAI.getBalance() < 50) {
-            Log.getInstance().Log(1, "You Wins in " + nRound + "Round!");
-            return true;
         }
-
         return false;
+    }
+
+    public boolean GameEnd() {
+        for (int i = 0; i < nNumberOfPlayer; i++) {
+            if (!CheckPlayerLose(pPlayerArray[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public BlackJackPlayRound getCurrentPlayRound() {
@@ -78,38 +90,54 @@ public class BlackJackPlay {
         return this.nRound;
     }
 
-    public void PlayNewRound() throws InterruptedException, MessagingException {
-        //Shuffle When Number Reduce Slow
-        nRound++;
-        ResetHand();
-        //洗洗更健康
-        if (deck.getNumber() < 10) {
-            deck.RebuildDeck();
+    public void RestorePlayerStatus() {
+        for (GamePlayer player : pPlayerArray) {
+            player.doDouble(false);
+            player.doSurrender(false);
         }
-        //Check Game Is End
+    }
+
+    public void PlayNewRound() throws InterruptedException, MessagingException {
+
         if (GameEnd()) {
             UI.GameEndProcedure();
         } else {
-            UI.RestoreControlOfPlayer();
-            UI.InitialBoardsBetweenRounds();
-            blackJackPlayRound = new BlackJackPlayRound(pPlayer, pAI, deck, UI, this);
-            blackJackPlayRound.SendFirstTwoCardsToBothPlayer();
+            blackJackPlayRound = new BlackJackPlayRound(pPlayerArray, pAI, deck, UI, this);
+            RestorePlayerStatus();
+            if (nRound != 0) {
+                ResetHand();
+                UI.RestoreControlOfPlayer();
+                UI.InitialBoardsBetweenPlayers();
+                PrintLog();
+            }
+            nRound++;
+
+            //Shuffle When Number Reduce Slow
+            if (deck.getNumber() < 30) {
+                deck.RebuildDeck();
+            }
+
+            blackJackPlayRound.SendFirstTwoCardsToPllayerX();
             UI.setRoundInfo(blackJackPlayRound);
+
         }
     }
 
     public void PrintLog() {
-
-        if (blackJackPlayRound.GetWinPlayer() == pAI) {
-            Log.getInstance().Log(1, "Round " + nRound + ": AI Wins " + blackJackPlayRound.getMoneyOfRoundth() + " Dollars");
-
-        } else {
-            Log.getInstance().Log(1, "Round " + nRound + ": You Wins " + blackJackPlayRound.getMoneyOfRoundth() + " Dollars");
+        for (int i = 0; i < nNumberOfPlayer; i++) {
+            Log.getInstance().Log(1, "AI Hand:      " + pAI.printCardInHand());
+            Log.getInstance().Log(1, "Player[" + i + "]Hand : " + pPlayerArray[i].printCardInHand());
+            Log.getInstance().Log(1, "Player[" + i + "]Money : " + pPlayerArray[i].getBalance());
+            Log.getInstance().Log(1, "-----------------------------------------------");
         }
-        Log.getInstance().Log(1, "AI Hand:      " + pAI.printCardInHand());
-        Log.getInstance().Log(1, "Player Hand : " + pPlayer.printCardInHand());
-        Log.getInstance().Log(1, "-----------------------------------------------");
+        System.out.println(Log.getInstance().getLog());
+    }
 
-       // UI.RefreshLog(Log.getInstance().getLog());
+    public AIPlayer getAI() {
+        return blackJackPlayRound.getAI();
+    }
+
+    public GamePlayer getCurrentPlayer() {
+        return blackJackPlayRound.getCurrentPlayer();
     }
 }

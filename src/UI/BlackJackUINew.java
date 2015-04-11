@@ -36,6 +36,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
     ArrayList<JButton> YourActionList = new ArrayList<JButton>();
     BlackJackPlay game;
     BlackJackPlayRound round;
+    
 
     public BlackJackUINew() {
         initComponents();
@@ -55,8 +56,8 @@ public class BlackJackUINew extends javax.swing.JFrame {
         YourActionList.add(jStand);
         YourActionList.add(jSurrender);
         YourActionList.add(jDouble);
-        
-         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -105,6 +106,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
         jAIMoney = new javax.swing.JTextField();
         jRound = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jNextRound1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -215,7 +217,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
         );
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 480, 800, 102);
+        jPanel2.setBounds(0, 480, 800, 100);
 
         AICards.setOpaque(false);
 
@@ -324,7 +326,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jNextRound);
-        jNextRound.setBounds(680, 390, 100, 23);
+        jNextRound.setBounds(690, 420, 100, 23);
 
         jPanel3.setOpaque(false);
 
@@ -385,8 +387,6 @@ public class BlackJackUINew extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jLabel8.getAccessibleContext().setAccessibleName("AI Points:");
-
         jPanel1.add(jPanel3);
         jPanel3.setBounds(610, 10, 190, 90);
 
@@ -397,6 +397,15 @@ public class BlackJackUINew extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/PokerCardImage/Table.jpg"))); // NOI18N
         jPanel1.add(jLabel1);
         jLabel1.setBounds(0, 0, 800, 590);
+
+        jNextRound1.setText("Next Round");
+        jNextRound1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jNextRound1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jNextRound1);
+        jNextRound1.setBounds(680, 390, 100, 23);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -413,9 +422,10 @@ public class BlackJackUINew extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void DoSomethingAtBegin() throws MessagingException {
-        InitialBoardsBetweenRounds();
+        InitialBoardsBetweenPlayers();
         //GameAI
-        game = new BlackJackPlay(this);
+        final int nNumOfPlayer = 4;
+        game = new BlackJackPlay(this, nNumOfPlayer);
         try {
             game.GameBegin();
 
@@ -438,7 +448,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
         }
     }
 
-    public void InitialBoardsBetweenRounds() {
+    public void InitialBoardsBetweenPlayers() {
 
         String strCardPath = "/PokerCardImage/Empty.png";
         ImageIcon icon = new ImageIcon(getClass().getResource(strCardPath));
@@ -469,13 +479,13 @@ public class BlackJackUINew extends javax.swing.JFrame {
             jPMoney.setText(String.valueOf(1000));
         } else {
             jAIMoney.setText(String.valueOf(game.getAI().getBalance()));
-            jPMoney.setText(String.valueOf(game.getPlayer().getBalance()));
+            jPMoney.setText(String.valueOf(game.getCurrentPlayer().getBalance()));
         }
     }
 
     public void RefreshNumOfPlayerHand() {
         if (game != null) {
-            Player player = game.getPlayer();
+            Player player = game.getCurrentPlayer();
             int nNumber = BlackJackRule.GetMaxValueOfHand(player);
             if (nNumber == -1) {
                 jPScore.setText("BUST!!");
@@ -500,15 +510,6 @@ public class BlackJackUINew extends javax.swing.JFrame {
     }
 
     public void GameEndProcedure() throws MessagingException {
-        //String strTime = String.valueOf(System.currentTimeMillis());
-        //Log.getInstance().Log(1, "Player ID:" + strTime);
-        //RefreshLog(Log.getInstance().getLog());
-
-        //JOptionPane.showMessageDialog(this, "Press Ok to Send E-Mail(Takes 20s),Your ID: " + strTime + "\n", "Thanks!", JOptionPane.INFORMATION_MESSAGE);
-        //Log.getInstance().MailLog();
-        //Log.getInstance().ClearLog();
-        // CleanLog();
-        //New Game!!!
         DoSomethingAtBegin();
     }
 
@@ -607,6 +608,11 @@ public class BlackJackUINew extends javax.swing.JFrame {
     public void DisableStand() {
         jStand.setEnabled(false);
     }
+    
+    
+    public void InitialBoardsBetweenRounds() {
+       
+    }
 
 
     private void jAIScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAIScoreActionPerformed
@@ -618,30 +624,30 @@ public class BlackJackUINew extends javax.swing.JFrame {
         if (round == null) {
             return;
         }
-        if (round.isPlayerPhase()) {
-            if (game.getPlayer().AmIDouble()) {
-                //GetOneCardAndStand
-                round.PlayerHit();
+
+        if (game.getCurrentPlayer().AmIDouble()) {
+            //GetOneCardAndStand
+            round.PlayerHit();
+            //Should not do this, but I am lazy.
+            jStandActionPerformed(null);
+            return;
+        }
+
+        if (!BlackJackRule.AmIBust(game.getCurrentPlayer())) {
+            round.PlayerHit();
+            DisableDouble();
+            DisableSurrender();
+            //Check GameStatus
+            if (BlackJackRule.AmIBust(game.getCurrentPlayer())) {
                 //Should not do this, but I am lazy.
                 jStandActionPerformed(null);
-                return;
             }
-
-            if (!BlackJackRule.AmIBust(game.getPlayer())) {
-                round.PlayerHit();
-                DisableDouble();
-                DisableSurrender();
-                //Check GameStatus
-                if (BlackJackRule.AmIBust(game.getPlayer())) {
-                    //Should not do this, but I am lazy.
-                    jStandActionPerformed(null);
-                }
-                if (BlackJackRule.AmIFiveDragon(game.getPlayer())) {
-                    //Should not do this, but I am lazy.
-                    jStandActionPerformed(null);
-                }
+            if (BlackJackRule.AmIFiveDragon(game.getCurrentPlayer())) {
+                //Should not do this, but I am lazy.
+                jStandActionPerformed(null);
             }
         }
+
     }//GEN-LAST:event_jHitActionPerformed
 
     private void jAIMoneyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAIMoneyActionPerformed
@@ -649,10 +655,10 @@ public class BlackJackUINew extends javax.swing.JFrame {
     }//GEN-LAST:event_jAIMoneyActionPerformed
 
     private void jNextRoundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jNextRoundActionPerformed
-        // TODO add your handling code here:
+
 
         try {
-            InitialBoardsBetweenRounds();
+            InitialBoardsBetweenPlayers();
             game.PlayNewRound();
 
         } catch (InterruptedException ex) {
@@ -664,31 +670,36 @@ public class BlackJackUINew extends javax.swing.JFrame {
     }//GEN-LAST:event_jNextRoundActionPerformed
 
     private void jStandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jStandActionPerformed
-        if (BlackJackRule.AmIBust(game.getPlayer())) {
-            //Player Bust! Round End!
-            round.RoundEndByPlayer();
-        }
-
-        if (round.isPlayerPhase()) {
-            TerminateControlOfPlayer();
-            round.AIPhase();
+ 
+        try {
+            round.RoundEndByPlayerX();
+            //TerminateControlOfPlayer(); 
+        } catch (InterruptedException ex) {
+            Logger.getLogger(BlackJackUINew.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jStandActionPerformed
 
     private void jSurrenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSurrenderActionPerformed
 
-        round.HalfMoneyOfRound();
-        round.RoundEnd(100);
+        try {
+            round.PlayerXSurrender();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(BlackJackUINew.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        game.getCurrentPlayer().doSurrender(true);
     }//GEN-LAST:event_jSurrenderActionPerformed
 
     private void jDoubleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDoubleActionPerformed
         // TODO add your handling code here:
-        round.DoubleMoneyOfRound();
-        game.getPlayer().doDouble(true);
+        round.PlayerXDouble();
         DisableDouble();
         DisableSurrender();
         DisableStand();
     }//GEN-LAST:event_jDoubleActionPerformed
+
+    private void jNextRound1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jNextRound1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jNextRound1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -753,6 +764,7 @@ public class BlackJackUINew extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JButton jNextRound;
+    private javax.swing.JButton jNextRound1;
     private javax.swing.JLabel jPBlackJack;
     private javax.swing.JTextField jPMoney;
     private javax.swing.JTextField jPScore;
@@ -770,4 +782,5 @@ public class BlackJackUINew extends javax.swing.JFrame {
     private javax.swing.JButton jStand;
     private javax.swing.JButton jSurrender;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -10,7 +10,7 @@ import PokerDeck.Card;
 import PokerDeck.CardDeck;
 import PlayerInfo.AIPlayer;
 import PlayerInfo.Player;
-import PlayerInfo.TruePlayer;
+import PlayerInfo.GamePlayer;
 import UI.BlackJackUINew;
 import java.util.HashSet;
 
@@ -20,38 +20,42 @@ import java.util.HashSet;
  */
 public class BlackJackPlayRound {
 
-    private final TruePlayer pPlayer;
+    private final GamePlayer pPlayer[];
     private final AIPlayer pAI;
 
-    private Player pCurrentPlayer;
+    private int nIndex;
+    private GamePlayer pCurrentPlayer;
     private final CardDeck cardDeck;
     private int nMoneyOfRound;
-    private Player pWinPlayer;
+    private final int nNumberOfPlayer;
 
     BlackJackUINew UI;
     BlackJackPlay game;
 
-    public BlackJackPlayRound(TruePlayer A, AIPlayer B, CardDeck d, BlackJackUINew ui, BlackJackPlay GAME) {
+    public BlackJackPlayRound(GamePlayer[] A, AIPlayer B, CardDeck d, BlackJackUINew ui, BlackJackPlay GAME) {
         pPlayer = A;
         pAI = B;
         cardDeck = d;
-
+        nNumberOfPlayer = A.length;
         UI = ui;
         //pCurrentPlayer = pPlayer;
         game = GAME;
         nMoneyOfRound = 50;
         UI.setBet(nMoneyOfRound);
 
-        pPlayer.doDouble(false);
-
+        for (int i = 0; i < nNumberOfPlayer; i++) {
+            pPlayer[i].doDouble(false);
+        }
+        nIndex = 0;
+        pCurrentPlayer = pPlayer[0];
     }
 
-    public Player getCurrentPlayer() {
+    public GamePlayer getCurrentPlayer() {
         return pCurrentPlayer;
     }
 
-    public boolean isPlayerPhase() {
-        return pCurrentPlayer == pPlayer;
+    public AIPlayer getAI() {
+        return pAI;
     }
 
     public void setMoneyOfRound(int nMoney) {
@@ -61,90 +65,87 @@ public class BlackJackPlayRound {
         UI.setBet(nMoney);
     }
 
-    public void DoubleMoneyOfRound() {
-        nMoneyOfRound *= 2;
-        this.setMoneyOfRound(nMoneyOfRound);
+    public void PlayerXDouble() {
+        pCurrentPlayer.doDouble(true);
     }
 
-    public void HalfMoneyOfRound() {
-        nMoneyOfRound /= 2;
-        this.setMoneyOfRound(nMoneyOfRound);
+    public void PlayerXSurrender() throws InterruptedException {
+        pCurrentPlayer.doSurrender(true);
+        RoundEndByPlayerX();
     }
 
     public int getMoneyOfRoundth() {
         return this.nMoneyOfRound;
     }
 
-    public void SendFirstTwoCardsToBothPlayer() throws InterruptedException {
+    public void SendFirstTwoCardsToPllayerX() throws InterruptedException {
 
         //Logic
-        Card AICard1 = cardDeck.giveTopCardToPlayer(pAI);
-        Card AICard2 = cardDeck.giveTopCardToPlayer(pAI);
+        if (nIndex == 0) {
+            Card AICard1 = cardDeck.giveTopCardToPlayer(pAI);
+            Card AICard2 = cardDeck.giveTopCardToPlayer(pAI);
+            UI.SendCardToPosition(true, AICard1, 1, false);
+            UI.SendCardToPosition(true, AICard2, 2, true);
 
-        Card playerCard1 = cardDeck.giveTopCardToPlayer(pPlayer);
-        Card playerCard2 = cardDeck.giveTopCardToPlayer(pPlayer);
-        //UI
-        if (pAI.getPlayerCards().size() != 2) {
-            System.out.println("ERROR! Card Number Error by Player");
-            return;
         }
-
-        UI.SendCardToPosition(true, AICard1, 1, false);
-        UI.SendCardToPosition(true, AICard2, 2, true);
-
+        Card playerCard1 = cardDeck.giveTopCardToPlayer(pCurrentPlayer);
+        Card playerCard2 = cardDeck.giveTopCardToPlayer(pCurrentPlayer);
         UI.SendCardToPosition(false, playerCard1, 1, true);
         UI.SendCardToPosition(false, playerCard2, 2, true);
 
         UI.RefreshNumOfPlayerHand();
-
     }
 
-    public int RoundEndByPlayer() {
-        return RoundEnd(BlackJackRule.GetBlackJackResult(pPlayer, pAI));
-    }
-
-    //Return Situation: 
-    //10 AI BlackJack AI win
-    //-10 Player BlackJack PlayerWin
-    //20 AI win 5 Dragons AI win
-    //-20 player win 5 Dragons Player Win
-    //30 AI bigger or equal with player AI win
-    //-30 player bigger than AI Player Win
-    //100 Player Surrender so AI win
-    public int RoundEnd(int nSituation) {
-
-        if (nSituation > 0) {
-            RoundEndAIWin();
-            pWinPlayer = pAI;
+    public void RoundEndByPlayerX() throws InterruptedException {
+        if (nNumberOfPlayer - 1 == nIndex) {
+            AIPhase();
         } else {
-            RoundEndYouWin();
-            pWinPlayer = pPlayer;
+            nIndex++;
+            pCurrentPlayer = pPlayer[nIndex];
+            SendFirstTwoCardsToPllayerX();
+            UI.RestoreControlOfPlayer();
         }
+    }
+
+    public void RoundEndByAI() {
+
+        MoneyAffairs();
+        
         UI.TerminateControlOfPlayer();
+        UI.AskForNextRound();
         game.PrintLog();
-        return nSituation;
+
     }
 
-    public void RoundEndAIWin() {
-        pPlayer.LoseMoney(nMoneyOfRound);
-        pAI.EarnMoney(nMoneyOfRound);
-
-        //UI
-        UI.RefreshWhenAIWin();
-        UI.AskForNextRound();
+    public void MoneyAffairs() {
+        for (GamePlayer player : pPlayer) {
+            if (player.AmISurrender()) {
+                RoundEndPlayerXLose(player, nMoneyOfRound / 2);
+            } else if (BlackJackRule.GetBlackJackResult(player, pAI) > 0) {
+                if (player.AmIDouble()) {
+                    RoundEndPlayerXLose(player, nMoneyOfRound * 2);
+                } else {
+                    RoundEndPlayerXLose(player, nMoneyOfRound);
+                }
+            } else {
+                if (player.AmIDouble()) {
+                    RoundEndPlayerXWin(player, nMoneyOfRound * 2);
+                } else {
+                    RoundEndPlayerXWin(player, nMoneyOfRound);
+                }
+            }
+        }
     }
-    
-    public Player GetWinPlayer(){
-        return pWinPlayer;
+
+    public void RoundEndPlayerXLose(GamePlayer pEndPlayer, int nMoney) {
+        pEndPlayer.LoseMoney(nMoney);
+        pAI.EarnMoney(nMoney);
+
     }
 
-    public void RoundEndYouWin() {
-        pPlayer.EarnMoney(nMoneyOfRound);
-        pAI.LoseMoney(nMoneyOfRound);
-
-        //UI
-        UI.RefreshWhenYouWin();
-        UI.AskForNextRound();
+    public void RoundEndPlayerXWin(GamePlayer pEndPlayer, int nMoney) {
+        pEndPlayer.EarnMoney(nMoney);
+        pAI.LoseMoney(nMoney);
     }
 
     public void PlayerPhase() {
@@ -159,7 +160,7 @@ public class BlackJackPlayRound {
     }
 
     public boolean DecidePlayerDoubleFromAI() {
-        return BlackJackRule.GetMaxValueOfHand(pPlayer.getPlayerCards()) > 14;
+        return BlackJackRule.GetMaxValueOfHand(pCurrentPlayer.getPlayerCards()) > 14;
     }
 
     public boolean DecidePlayerDoubleFromUI() {
@@ -167,20 +168,21 @@ public class BlackJackPlayRound {
     }
 
     public Card PlayerHit() {
-        Card card = cardDeck.giveTopCardToPlayer(pPlayer);
-        UI.SendCardToPosition(false, card, pPlayer.getPlayerCards().size(), true);
+        Card card = cardDeck.giveTopCardToPlayer(pCurrentPlayer);
+        UI.SendCardToPosition(false, card, pCurrentPlayer.getPlayerCards().size(), true);
         UI.RefreshNumOfPlayerHand();
 
         //TODO player Bust
-        if (BlackJackRule.AmIBust(pPlayer)) {
+        if (BlackJackRule.AmIBust(pCurrentPlayer)) {
             ;
         }
         return card;
     }
 
     public void AIPhase() {
+
+        UI.TerminateControlOfPlayer();
         BJAIMain aiMain = new BJAIMain();
-//        pCurrentPlayer = pPlayer;
 
         while (BlackJackRule.GetMaxValueOfHand(pAI.getPlayerCards()) < 17) {
 
@@ -188,34 +190,33 @@ public class BlackJackPlayRound {
             UI.SendCardToPosition(true, card, pAI.getPlayerCards().size(), true);
 
             if (BlackJackRule.AmIBust(pAI)) {
-                //AI Bust by 17 Rule
-                RoundEndByPlayer();
+                RoundEndByAI();
                 return;
             }
         }
         //A|B Test
         if (game.getNumOfRound() % 2 == 0) {
-            while (aiMain.doMakeDecisionLevelSB(cardDeck, pAI.getPlayerCards(), pPlayer.getPlayerCards())) {
+            while (aiMain.doMakeDecisionLevelSB(cardDeck, pAI.getPlayerCards(), pCurrentPlayer.getPlayerCards())) {
                 cardDeck.giveTopCardToPlayer(pAI);
 
                 if (BlackJackRule.AmIBust(pAI.getPlayerCards())) {
                     //AI Bust by BAD decison
-                    RoundEndByPlayer();
+                    RoundEndByAI();
                     return;
                 }
             }
         } else {
-            while (aiMain.doMakeDecisionLevel1(cardDeck, pAI.getPlayerCards(), pPlayer.getPlayerCards())) {
+            while (aiMain.doMakeDecisionLevel1(cardDeck, pAI.getPlayerCards(), pCurrentPlayer.getPlayerCards())) {
                 cardDeck.giveTopCardToPlayer(pAI);
 
                 if (BlackJackRule.AmIBust(pAI.getPlayerCards())) {
                     //AI Bust by BAD decison
-                    RoundEndByPlayer();
+                    RoundEndByAI();
                     return;
                 }
             }
         }
         //AI survive without Bust
-        RoundEndByPlayer();
+        RoundEndByAI();
     }
 }

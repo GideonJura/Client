@@ -18,14 +18,24 @@ public class Player {
     protected double dBalance;
     int nNumCards;
     boolean bDouble;
+    boolean bSurrender;
     ArrayList<Card> CardArray;
     
     public void doDouble(boolean b) {
         this.bDouble = b;
     }
     
+    public void doSurrender(boolean b)
+    {
+        this.bSurrender = b;
+    }
+    
     public boolean AmIDouble() {
         return this.bDouble;
+    }
+    
+    public boolean AmISurrender(){
+        return this.bSurrender;
     }
     
     public void EarnMoney(int nInitMoney) {

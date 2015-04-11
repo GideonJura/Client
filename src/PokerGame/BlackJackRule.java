@@ -7,7 +7,7 @@ package PokerGame;
 
 import PlayerInfo.AIPlayer;
 import PlayerInfo.Player;
-import PlayerInfo.TruePlayer;
+import PlayerInfo.GamePlayer;
 import PokerDeck.Card;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -147,7 +147,7 @@ public class BlackJackRule {
         }
     }
 
-    static public int GetBlackJackResult(TruePlayer pPlayer, AIPlayer pAI) {
+    static public int GetBlackJackResult(Player pPlayer, AIPlayer pAI) {
         int nRet = 0;
         boolean bAIWin = false;
         if (BlackJackRule.AmIBlackJack(pAI)) {

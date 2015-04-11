@@ -70,3 +70,55 @@
 [LOG]AI Hand:      SpadeJ Club2 Spade9 Total Num: 21
 [LOG]Player Hand : Club7 HeartJ Diamoud5 Total Num: -1
 [LOG]-----------------------------------------------
+[LOG]AI Hand:      Diamoud7 Club5 Club2 SpadeQ Total Num: -1
+[LOG]AI Money:     200.0
+[LOG]Player[0]Hand : Heart9 Diamoud6 Total Num: 15
+[LOG]Player[0]Money : 950.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Diamoud7 Club5 Club2 SpadeQ Total Num: -1
+[LOG]AI Money:     200.0
+[LOG]Player[1]Hand : Diamoud8 Heart4 Total Num: 12
+[LOG]Player[1]Money : 950.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Diamoud7 Club5 Club2 SpadeQ Total Num: -1
+[LOG]AI Money:     200.0
+[LOG]Player[2]Hand : Club7 Spade2 Total Num: 9
+[LOG]Player[2]Money : 950.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Diamoud7 Club5 Club2 SpadeQ Total Num: -1
+[LOG]AI Money:     200.0
+[LOG]Player[3]Hand : Club3 Heart6 Total Num: 9
+[LOG]Player[3]Money : 950.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Spade10 DiamoudK Total Num: 20
+[LOG]Player[0]Hand : Club10 SpadeA Spade2 Total Num: 13
+[LOG]Player[0]Money : 900.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Spade10 DiamoudK Total Num: 20
+[LOG]Player[1]Hand : Heart8 HeartK Club4 Total Num: -1
+[LOG]Player[1]Money : 975.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Spade10 DiamoudK Total Num: 20
+[LOG]Player[2]Hand : HeartJ Spade3 Spade8 Heart9 Total Num: -1
+[LOG]Player[2]Money : 975.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Spade10 DiamoudK Total Num: 20
+[LOG]Player[3]Hand : Club6 DiamoudJ Diamoud7 Total Num: -1
+[LOG]Player[3]Money : 975.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Club6 Heart4 Diamoud2 HeartQ Total Num: -1
+[LOG]Player[0]Hand : Diamoud10 HeartJ Total Num: 20
+[LOG]Player[0]Money : 975.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Club6 Heart4 Diamoud2 HeartQ Total Num: -1
+[LOG]Player[1]Hand : SpadeA HeartA Total Num: 12
+[LOG]Player[1]Money : 975.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Club6 Heart4 Diamoud2 HeartQ Total Num: -1
+[LOG]Player[2]Hand : Club7 ClubA Total Num: 18
+[LOG]Player[2]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Club6 Heart4 Diamoud2 HeartQ Total Num: -1
+[LOG]Player[3]Hand : Heart5 Diamoud4 Club3 Total Num: 12
+[LOG]Player[3]Money : 1100.0
+[LOG]-----------------------------------------------
