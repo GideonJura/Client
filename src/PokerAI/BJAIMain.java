@@ -5,6 +5,9 @@
  */
 package PokerAI;
 
+import Log.Log;
+import PlayerInfo.AIPlayer;
+import PlayerInfo.GamePlayer;
 import PokerDeck.Card;
 import PokerDeck.CardDeck;
 import PokerGame.BlackJackRule;
@@ -144,6 +147,62 @@ public class BJAIMain {
             (double) nOppWin / (double) nTotal};
 
         return resultArray;
+    }
+
+    public boolean doMakeDecisionLevelSBMultiPlayer(CardDeck cdBeforeGame, AIPlayer pAI, GamePlayer[] pArrPlayer) {
+        return Math.random() < 0.5;
+    }
+
+    public boolean doMakeDecisionLevel1MultiPlayer(CardDeck cdBeforeGame, AIPlayer pAI, GamePlayer[] pArrPlayer) {
+        int nNumberOfPlayer = pArrPlayer.length;
+
+        if (nNumberOfPlayer == 0) {
+            Log.getInstance().Log(2, "ZeroPlayer in AI...");
+            return false;
+        }
+
+        double dOppWinWhenStop = 0.0;
+        double dAIWinWhenStop = 0.0;
+        double dOppWinWhenHit = 0.0;
+        double dAIWinWhenHit = 0.0;
+        for (GamePlayer pCurrentPlayer : pArrPlayer) {
+            ArrayList<Card> myCard = pAI.getPlayerCards();
+            ArrayList<Card> oppCard = pCurrentPlayer.getPlayerCards();
+            TreeMap<Integer, Integer> myTreeMap = GetDistributionOfOwnNewCard(cdBeforeGame, myCard, oppCard);
+            TreeMap<Integer, Integer> myTreeMapWhenStop = GetDistributionOfOwn(cdBeforeGame, myCard, oppCard);
+            TreeMap<Integer, Integer> oppTreeMap = GetOpponentPointDistribution(cdBeforeGame, myCard, oppCard);
+
+            double[] resultArrayWhenHit = GetWinningPoss(myTreeMap, oppTreeMap);
+            double[] resultWhenStop = GetWinningPoss(myTreeMapWhenStop, oppTreeMap);
+
+            double dFactor = 1;
+            if (pCurrentPlayer.AmIDouble()) {
+                dFactor = 2;
+            } else if (pCurrentPlayer.AmISurrender()) {
+                dFactor = 0.5;
+                //when a player give up your winning expectaion remains the same so just continue
+                continue;
+            }
+
+            dOppWinWhenStop += resultWhenStop[2] * dFactor;
+            dAIWinWhenStop += resultWhenStop[0] * dFactor;
+            dOppWinWhenHit += resultArrayWhenHit[2] * dFactor;
+            dAIWinWhenHit = resultArrayWhenHit[0] * dFactor;
+        }
+
+        if ((dAIWinWhenHit - dOppWinWhenHit) > (dOppWinWhenStop - dAIWinWhenStop)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean doMakeDecisionLevel0MultiPlayer(CardDeck cdBeforeGame, AIPlayer pAI, GamePlayer[] pArrPlayer) {
+        if (BlackJackRule.GetMaxValueOfHand(pAI) < 18 && BlackJackRule.GetMaxValueOfHand(pAI) != -1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //Level SB AI 完全胡逼完

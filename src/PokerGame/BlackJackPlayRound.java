@@ -196,7 +196,7 @@ public class BlackJackPlayRound {
         }
         //A|B Test
         if (game.getNumOfRound() % 2 == 0) {
-            while (aiMain.doMakeDecisionLevelSB(cardDeck, pAI.getPlayerCards(), pCurrentPlayer.getPlayerCards())) {
+            while (aiMain.doMakeDecisionLevelSBMultiPlayer(cardDeck, pAI, pPlayer)) {
                 cardDeck.giveTopCardToPlayer(pAI);
 
                 if (BlackJackRule.AmIBust(pAI.getPlayerCards())) {
@@ -206,7 +206,7 @@ public class BlackJackPlayRound {
                 }
             }
         } else {
-            while (aiMain.doMakeDecisionLevel1(cardDeck, pAI.getPlayerCards(), pCurrentPlayer.getPlayerCards())) {
+            while (aiMain.doMakeDecisionLevel1MultiPlayer(cardDeck, pAI, pPlayer)) {
                 cardDeck.giveTopCardToPlayer(pAI);
 
                 if (BlackJackRule.AmIBust(pAI.getPlayerCards())) {
