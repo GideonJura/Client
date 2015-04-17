@@ -122,3 +122,51 @@
 [LOG]Player[3]Hand : Heart5 Diamoud4 Club3 Total Num: 12
 [LOG]Player[3]Money : 1100.0
 [LOG]-----------------------------------------------
+[LOG]AI Hand:      Heart4 Spade3 DiamoudK Spade10 Total Num: -1
+[LOG]Player[0]Hand : SpadeA Diamoud5 Total Num: 16
+[LOG]Player[0]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Heart4 Spade3 DiamoudK Spade10 Total Num: -1
+[LOG]Player[1]Hand : Heart8 Heart10 Club6 Total Num: -1
+[LOG]Player[1]Money : 900.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Heart4 Spade3 DiamoudK Spade10 Total Num: -1
+[LOG]Player[2]Hand : Club8 Spade5 Total Num: 13
+[LOG]Player[2]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Heart4 Spade3 DiamoudK Spade10 Total Num: -1
+[LOG]Player[3]Hand : Club7 Diamoud4 Total Num: 11
+[LOG]Player[3]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Total Num: 0
+[LOG]Player[0]Hand : Total Num: 0
+[LOG]Player[0]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Total Num: 0
+[LOG]Player[1]Hand : Total Num: 0
+[LOG]Player[1]Money : 900.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Total Num: 0
+[LOG]Player[2]Hand : Total Num: 0
+[LOG]Player[2]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      Total Num: 0
+[LOG]Player[3]Hand : Total Num: 0
+[LOG]Player[3]Money : 1050.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      SpadeK Heart7 Total Num: 17
+[LOG]Player[0]Hand : Spade4 Diamoud7 Spade2 Spade8 Diamoud8 Total Num: -1
+[LOG]Player[0]Money : 1000.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      SpadeK Heart7 Total Num: 17
+[LOG]Player[1]Hand : DiamoudJ ClubA Club9 ClubQ Total Num: -1
+[LOG]Player[1]Money : 850.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      SpadeK Heart7 Total Num: 17
+[LOG]Player[2]Hand : HeartA HeartQ Diamoud2 Heart5 Heart9 Total Num: -1
+[LOG]Player[2]Money : 1000.0
+[LOG]-----------------------------------------------
+[LOG]AI Hand:      SpadeK Heart7 Total Num: 17
+[LOG]Player[3]Hand : Spade9 Spade6 ClubJ Total Num: -1
+[LOG]Player[3]Money : 1000.0
+[LOG]-----------------------------------------------
