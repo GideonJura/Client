@@ -3,21 +3,23 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Client/src/PokerAI/BJAIMain.java</file>
-            <file>file:/E:/Client/src/JudgeStatus/JudgeStatus.java</file>
-            <file>file:/E:/Client/src/PlayerInfo/GamePlayer.java</file>
             <file>file:/E:/Client/src/PlayerInfo/AIPlayer.java</file>
+            <file>file:/E:/Client/src/PlayerInfo/GamePlayer.java</file>
+            <file>file:/E:/Client/src/PlayerInfo/Player.java</file>
+            <file>file:/E:/Client/src/PokerGame/BlackJackPlay.java</file>
             <file>file:/E:/Client/src/PokerGame/BlackJackPlayRound.java</file>
+            <file>file:/E:/Client/src/UI/BlackJackUINew.java</file>
             <file>file:/E:/Client/src/PokerDeck/CardDeck.java</file>
-            <file>file:/E:/Client/src/UI/CreateRoom.java</file>
+            <file>file:/E:/Client/src/PokerGame/BlackJackRule.java</file>
+            <file>file:/E:/Client/src/JudgeStatus/JudgeStatus.java</file>
+            <file>file:/E:/Client/src/GameInfo/Player.java</file>
+            <file>file:/E:/Client/src/GameInfo/Room.java</file>
             <file>jar:file:/E:/Client/src/SedingData.zip!/SedingData/MyHostnameVerifier.java</file>
             <file>jar:file:/E:/Client/src/SedingData.zip!/SedingData/SSLClient.java</file>
-            <file>file:/E:/Client/src/PokerGame/BlackJackRule.java</file>
-            <file>file:/E:/Client/src/PokerGame/BlackJackPlay.java</file>
-            <file>file:/E:/Client/src/PlayerInfo/Player.java</file>
-            <file>file:/E:/Client/src/UI/BlackJackUINew.java</file>
-            <file>file:/E:/Client/src/GameInfo/Room.java</file>
-            <file>file:/E:/Client/src/GameInfo/Player.java</file>
+            <file>file:/E:/Client/src/PokerAI/BJAIMain.java</file>
+            <file>file:/E:/Client/src/UI/CreateRoom.java</file>
+            <file>file:/E:/Client/src/UI/CreateRoomInfo.java</file>
+            <file>file:/E:/Client/src/UI/JoinRoom.java</file>
         </group>
     </open-files>
 </project-private>
